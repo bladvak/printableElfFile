@@ -8,19 +8,25 @@ class PrintableEhdr{
 public:
     PrintableEhdr() = default;
     
-    virtual std::string ident() = 0;
+    virtual std::string magic() = 0;
+
+    virtual std::string ident_class() = 0;
+    virtual std::string ident_data() = 0;
+    virtual std::string ident_version() = 0;
+
     virtual pr type() = 0;
     virtual pr machine() = 0;
     virtual pr version() = 0;
-    virtual pr entry() = 0;
-    virtual pr phoff() = 0;
-    virtual pr shoff() = 0;
-    virtual pr flags() = 0;
-    virtual pr ehsize() = 0;
-    virtual pr phentsize() = 0;
-    virtual pr phnum() = 0;
-    virtual pr shentsize() = 0;
-    virtual pr shnum() = 0;
-    virtual pr shstrndx() = 0;
+
+    virtual std::string entry() = 0;
+    virtual std::string phoff() = 0;
+    virtual std::string shoff() = 0;
+    virtual std::string flags() = 0;
+    virtual std::string ehsize() = 0;
+    virtual std::string phentsize() = 0;
+    virtual std::string phnum() = 0;
+    virtual std::string shentsize() = 0;
+    virtual std::string shnum() = 0;
+    virtual std::string shstrndx() = 0;
     
 };

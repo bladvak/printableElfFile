@@ -365,3 +365,5 @@ FodyWeavers.xsd
 #-----------
 *.out
 *.o
+exe
+.vscode
