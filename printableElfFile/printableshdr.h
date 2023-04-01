@@ -1,6 +1,7 @@
 #include <utility>
 #include <string>
 #include <unordered_map>
+#include <elf.h>
 
 typedef std::pair<std::string, std::string> pr;
 

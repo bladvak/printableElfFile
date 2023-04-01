@@ -1,5 +1,4 @@
 #include "printableehdr.h"
-#include <stdexcept>
 #include <unordered_map>
 
 class PrintableEhdr64 : public PrintableEhdr{

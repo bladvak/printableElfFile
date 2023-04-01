@@ -1,5 +1,6 @@
 #include "printableehdr64.h"
 #include <sstream>
+#include <stdexcept>
 
 std::string PrintableEhdr64::intToStrHex(long long val)
 {
