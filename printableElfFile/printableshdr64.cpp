@@ -1,55 +1,55 @@
-#include "printableshdr32.h"
+#include "printableshdr64.h"
 #include <sstream>
 
-PrintableShdr32::PrintableShdr32(void *mem_ptr) : 
-        shdr_ptr(static_cast<Elf32_Shdr*>(mem_ptr))
+PrintableShdr64::PrintableShdr64(void *mem_ptr) :
+        shdr_ptr(static_cast<Elf64_Shdr*>(mem_ptr))
 {
     
 }
 
-int PrintableShdr32::name_index()
+int PrintableShdr64::name_index()
 {
     return shdr_ptr->sh_name;
 }
 
-pr PrintableShdr32::type()
+pr PrintableShdr64::type()
 {
     return {intToStrHex(shdr_ptr->sh_type),s_type[shdr_ptr->sh_type]};
 }
 
-std::string PrintableShdr32::addr()
+std::string PrintableShdr64::addr()
 {
     return intToStrHex(shdr_ptr->sh_addr);
 }
 
-std::string PrintableShdr32::offset()
+std::string PrintableShdr64::offset()
 {
     return intToStrHex(shdr_ptr->sh_offset);
 }
 
-std::string PrintableShdr32::size()
+std::string PrintableShdr64::size()
 {
     return intToStrHex(shdr_ptr->sh_size);
 }
 
-int PrintableShdr32::link()
+int PrintableShdr64::link()
 {
     return shdr_ptr->sh_link;
 }
 
-int PrintableShdr32::info()
+int PrintableShdr64::info()
 {
     return shdr_ptr->sh_info;
 }
 
-std::string PrintableShdr32::intToStrHex(long long val)
+std::string PrintableShdr64::intToStrHex(long long val)
 {
     std::ostringstream ss;
     ss<<"0x"<<std::hex<<val;
     return ss.str();
 }
 
-std::unordered_map<int, std::string> PrintableShdr32::s_type{
+std::unordered_map<int, std::string> PrintableShdr64::s_type{
     {SHT_NULL,"Section header table entry unused "}, 
 {SHT_PROGBITS,"Program data "},    
 {SHT_SYMTAB,"Symbol table "},    
@@ -85,4 +85,4 @@ std::unordered_map<int, std::string> PrintableShdr32::s_type{
 {SHT_LOPROC,"Start of processor-specific "},   
 {SHT_HIPROC,"End of processor-specific "},   
 {SHT_LOUSER,"Start of application-specific "},   
-{SHT_HIUSER,"End of application-specific "}};   
+{SHT_HIUSER,"End of application-specific "}}; 
