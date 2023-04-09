@@ -1,3 +1,6 @@
+#ifndef PRINTABLESHDR64_H
+#define PRINTABLESHDR64_H
+
 #include "printableshdr.h"
 
 class PrintableShdr64 {
@@ -24,3 +27,5 @@ std::string intToStrHex(long long val);
 //virtual entsize() = 0;
 
 };
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef PRINTABLESHDR32_H
+#define PRINTABLESHDR32_H
+
 #include "printableshdr.h"
 #include <unordered_map>
 
@@ -25,3 +28,5 @@ std::string intToStrHex(long long val);
 //virtual entsize() = 0;
 
 };
+
+#endif

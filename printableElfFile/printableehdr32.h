@@ -1,3 +1,6 @@
+#ifndef PRINTABLEEHDR32_H
+#define PRINTABLEEHDR32_H
+
 #include "printableehdr.h"
 #include <stdexcept>
 #include <unordered_map>
@@ -34,3 +37,5 @@ public:
 private:
 static std::unordered_map<int, std::string> e_type;
 };
+
+#endif
