@@ -1,2 +1,8 @@
------------------------------------
+### ABOUT 
 Displays information about object files(ELF)
+
+The idea behind this project is based on the readelf tool from GNU binutils. Output might look like the one produced by readelf, but I will (probably) not implement all of its functionality. That being said, this project will include some of the more sophisticated functionalities, e.g. detecting if the file is packed by analysing code patterns near the file's entry point.
+
+### BUILT WITH
+Written using STL. For cmd line arguments processing boost/program_options will be used.
+
