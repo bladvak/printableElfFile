@@ -4,7 +4,7 @@
 #include "printableshdr.h"
 #include <unordered_map>
 
-class PrintableShdr32 {
+class PrintableShdr32 : public PrintableShdr{
 public:
 PrintableShdr32(void* ptr);
 

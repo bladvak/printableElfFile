@@ -3,7 +3,7 @@
 
 #include "printableshdr.h"
 
-class PrintableShdr64 {
+class PrintableShdr64 : public PrintableShdr{
 public:
 PrintableShdr64(void* ptr);
 
