@@ -1,14 +1,12 @@
-#ifndef PRINTABLEELF_H
-#define PRINTABLEELF_H
+#ifndef PRINTABLEELF_HPP
+#define PRINTABLEELF_HPP
 
-#include "printableehdr32.h"
-#include "printableehdr64.h"
-#include "printablephdr32.h"
-#include "printablephdr64.h"
-#include "printableshdr32.h"
-#include "printableshdr64.h"
-#include <iostream>
+#include "printable_ehdr.hpp"
+
 #include <vector>
+#include <memory>
+#include <fstream>
+#include <variant>
 
 class PrintableElf{
 
@@ -24,13 +22,15 @@ public:
     void ProgramHeaders();
 
 private:
+
     const std::string file_path;
     std::ostream& os;
     std::ifstream file;
+    std::unique_ptr<char[]> mem;
 
-    PrintableEhdr* ehdr;
-    std::vector<PrintablePhdr* > phdrs;
-    std::vector<PrintableShdr* > shdrs;
+    std::variant<Elf32_Ehdr*,Elf64_Ehdr*> ehdr;
+    //std::vector<PrintablePhdr* > phdrs;
+    //std::vector<PrintableShdr* > shdrs;
 };
 
 #endif

@@ -1,145 +1,224 @@
-#include "printableehdr64.h"
+#include "printable_ehdr.hpp"
 #include <sstream>
-#include <stdexcept>
 
-std::string PrintableEhdr64::intToStrHex(long long val)
-{
-    std::ostringstream ss;
-    ss<<"0x"<<std::hex<<val;
+
+namespace Ehdr{
+    std::string magic::operator()(Elf32_Ehdr* ehdr){
+        std::ostringstream ss;
+        for(int i=0; i<16; ++i)
+            ss<<std::hex<<(int)ehdr->e_ident[i]<<" ";
     return ss.str();
+    }
+
+    std::string magic::operator()(Elf64_Ehdr* ehdr){
+        std::ostringstream ss;
+        for(int i=0; i<16; ++i)
+            ss<<std::hex<<(int)ehdr->e_ident[i]<<" ";
+    return ss.str();
+    }
+
+    std::string ident_class::operator()(Elf32_Ehdr* ehdr){
+        switch(ehdr->e_ident[EI_CLASS]){
+         case ELFCLASS32: return "ELF32";
+         case ELFCLASS64: return "ELF64";
+         case ELFCLASSNONE: return "NONE";
+         default: return "---";
+        }
+    }
+
+    std::string ident_class::operator()(Elf64_Ehdr* ehdr){
+        switch(ehdr->e_ident[EI_CLASS]){
+         case ELFCLASS32: return "ELF32";
+         case ELFCLASS64: return "ELF64";
+         case ELFCLASSNONE: return "NONE";
+         default: return "---";
+        }
+    }
+
+    std::string ident_data::operator()(Elf32_Ehdr* ehdr){
+        switch(ehdr->e_ident[EI_DATA]){
+         case ELFDATA2LSB: return "little endian";
+         case ELFDATA2MSB: return "big endian";
+         case ELFDATANONE: return "invalid data encoding";
+         default: return "---";
+        }
+    }
+
+    std::string ident_data::operator()(Elf64_Ehdr* ehdr){
+        switch(ehdr->e_ident[EI_DATA]){
+         case ELFDATA2LSB: return "little endian";
+         case ELFDATA2MSB: return "big endian";
+         case ELFDATANONE: return "invalid data encoding";
+         default: return "---";
+        }
+    }
+
+    std::string ident_version::operator()(Elf32_Ehdr* ehdr){
+        switch(ehdr->e_ident[EI_VERSION]){
+         case EV_CURRENT: return "current";
+         case EV_NONE: return "invalid";
+         default: return "---";
+        }
+    }
+
+    std::string ident_version::operator()(Elf64_Ehdr* ehdr){
+        switch(ehdr->e_ident[EI_VERSION]){
+         case EV_CURRENT: return "current";
+         case EV_NONE: return "invalid";
+         default: return "---";
+        }
+    }
+
+    pr type::operator()(Elf32_Ehdr* ehdr){
+        std::string result;
+
+        switch(ehdr->e_type){
+         case ET_NONE: result = "NONE";break;
+         case ET_REL: result = "REL";break;
+         case ET_EXEC: result = "EXEC";break;
+         case ET_DYN: result = "DYN";break;
+         case ET_CORE: result = "CORE";break;
+         case ET_NUM: result = "NUM";break;
+         case ET_LOOS: result = "LOOS";break;
+         case ET_HIOS: result = "HIOS";break;
+         case ET_LOPROC: result = "LOPROC";break;
+         case ET_HIPROC: result = "HIPROC";break;
+         default: result = "---";break;
+        }
+        return {intToStrHex(ehdr->e_type), result};
+    }
+
+    pr type::operator()(Elf64_Ehdr* ehdr){
+        std::string result;
+
+        switch(ehdr->e_type){
+         case ET_NONE: result = "NONE";break;
+         case ET_REL: result = "REL";break;
+         case ET_EXEC: result = "EXEC";break;
+         case ET_DYN: result = "DYN";break;
+         case ET_CORE: result = "CORE";break;
+         case ET_NUM: result = "NUM";break;
+         case ET_LOOS: result = "LOOS";break;
+         case ET_HIOS: result = "HIOS";break;
+         case ET_LOPROC: result = "LOPROC";break;
+         case ET_HIPROC: result = "HIPROC";break;
+         default: result = "---";break;
+        }
+        return {intToStrHex(ehdr->e_type), result};
+    }
+
+    pr machine::operator()(Elf32_Ehdr* ehdr){
+        return {intToStrHex(ehdr->e_machine), machineDict[ehdr->e_machine]};
+    }
+
+    pr machine::operator()(Elf64_Ehdr* ehdr){
+        return {intToStrHex(ehdr->e_machine), machineDict[ehdr->e_machine]};
+    }
+
+    pr version::operator()(Elf32_Ehdr* ehdr){
+        std::string result;
+        switch(ehdr->e_version){
+         case EV_NONE: result = "NONE"; break;
+         case EV_CURRENT: result = "CURRENT"; break;
+         case EV_NUM: result = "NUM"; break;
+         default: result = "---"; break;
+        }
+        return {intToStrHex(ehdr->e_version), result};
+    }
+
+    pr version::operator()(Elf64_Ehdr* ehdr){
+        std::string result;
+        switch(ehdr->e_version){
+         case EV_NONE: result = "NONE"; break;
+         case EV_CURRENT: result = "CURRENT"; break;
+         case EV_NUM: result = "NUM"; break;
+         default: result = "---"; break;
+        }
+        return {intToStrHex(ehdr->e_version), result};
+    }
+
+    std::string entry::operator()(Elf32_Ehdr* ehdr){
+        return std::to_string(ehdr->e_entry);
+    }
+
+    std::string entry::operator()(Elf64_Ehdr* ehdr){
+        return std::to_string(ehdr->e_entry);
+    }
+
+    std::string phoff::operator()(Elf32_Ehdr* ehdr){
+        return std::to_string(ehdr->e_phoff);
+    }
+
+    std::string phoff::operator()(Elf64_Ehdr* ehdr){
+        return std::to_string(ehdr->e_phoff);
+    }
+
+    std::string shoff::operator()(Elf32_Ehdr* ehdr){
+        return std::to_string(ehdr->e_shoff);
+    }
+
+    std::string shoff::operator()(Elf64_Ehdr* ehdr){
+        return std::to_string(ehdr->e_shoff);
+    }
+
+    std::string flags::operator()(Elf32_Ehdr* ehdr){
+        return std::to_string(ehdr->e_flags);
+    }
+
+    std::string flags::operator()(Elf64_Ehdr* ehdr){
+        return std::to_string(ehdr->e_flags);
+    }
+
+    std::string ehsize::operator()(Elf32_Ehdr* ehdr){
+        return std::to_string(ehdr->e_ehsize);
+    }
+
+    std::string ehsize::operator()(Elf64_Ehdr* ehdr){
+        return std::to_string(ehdr->e_ehsize);
+    }
+
+    std::string phentsize::operator()(Elf32_Ehdr* ehdr){
+        return std::to_string(ehdr->e_phentsize);
+    }
+
+    std::string phentsize::operator()(Elf64_Ehdr* ehdr){
+        return std::to_string(ehdr->e_phentsize);
+    }
+
+    std::string phnum::operator()(Elf32_Ehdr* ehdr){
+        return std::to_string(ehdr->e_phnum);
+    }
+
+    std::string phnum::operator()(Elf64_Ehdr* ehdr){
+        return std::to_string(ehdr->e_phnum);
+    }
+
+    std::string shentsize::operator()(Elf32_Ehdr* ehdr){
+        return std::to_string(ehdr->e_shentsize);
+    }
+
+    std::string shentsize::operator()(Elf64_Ehdr* ehdr){
+        return std::to_string(ehdr->e_shentsize);
+    }
+
+    std::string shnum::operator()(Elf32_Ehdr* ehdr){
+        return std::to_string(ehdr->e_shnum);
+    }
+
+    std::string shnum::operator()(Elf64_Ehdr* ehdr){
+        return std::to_string(ehdr->e_shnum);
+    }
+
+    std::string shstrndx::operator()(Elf32_Ehdr* ehdr){
+        return std::to_string(ehdr->e_shstrndx);
+    }
+
+    std::string shstrndx::operator()(Elf64_Ehdr* ehdr){
+        return std::to_string(ehdr->e_shstrndx);
+    }
 }
 
-PrintableEhdr64::PrintableEhdr64(void *mem_ptr) : ehdr64_ptr(static_cast<Elf64_Ehdr *>(mem_ptr))
-{
-    if(ehdr64_ptr == nullptr)
-        throw std::runtime_error("pointer to Ehdr struct cannot be null.");
-}
-
- std::string PrintableEhdr64::magic()
- {
-    std::ostringstream ss;
-    for(int i=0; i<16; ++i)
-        ss<<"0x"<<std::hex<<(int)ehdr64_ptr->e_ident[i];
-    return ss.str();
- }
-
- std::string PrintableEhdr64::ident_class()
- {
-    switch(ehdr64_ptr->e_ident[EI_CLASS]){
-      case ELFCLASS32: return "ELF32";
-      case ELFCLASS64: return "ELF64";
-      case ELFCLASSNONE: return "NONE";
-      default: return "---";
-    }
- }
-
- std::string PrintableEhdr64::ident_data()
- {
-    switch(ehdr64_ptr->e_ident[EI_DATA]){
-      case ELFDATA2LSB: return "little endian";
-      case ELFDATA2MSB: return "big endian";
-      case ELFDATANONE: return "invalid data encoding";
-      default: return "---";
-    }
- }
-
- std::string PrintableEhdr64::ident_version()
- {
-    switch(ehdr64_ptr->e_ident[EI_VERSION]){
-      case EV_CURRENT: return "current";
-      case EV_NONE: return "invalid";
-      default: return "---";
-    }
- }
-
- pr PrintableEhdr64::type()
- {
-    std::string result;
-
-    switch(ehdr64_ptr->e_type){
-        case ET_NONE: result = "NONE";break;
-        case ET_REL: result = "REL";break;
-        case ET_EXEC: result = "EXEC";break;
-        case ET_DYN: result = "DYN";break;
-        case ET_CORE: result = "CORE";break;
-        case ET_NUM: result = "NUM";break;
-        case ET_LOOS: result = "LOOS";break;
-        case ET_HIOS: result = "HIOS";break;
-        case ET_LOPROC: result = "LOPROC";break;
-        case ET_HIPROC: result = "HIPROC";break;
-        default: result = "---";break;
-    }
-    return {intToStrHex(ehdr64_ptr->e_type), result};
- }
-
- pr PrintableEhdr64::machine()
- {
-    return {intToStrHex(ehdr64_ptr->e_machine),e_type[ehdr64_ptr->e_machine]};
- }
-
- pr PrintableEhdr64::version()
- {
-    std::string result;
-    switch(ehdr64_ptr->e_version){
-      case EV_NONE: result = "NONE"; break;
-      case EV_CURRENT: result = "CURRENT"; break;
-      case EV_NUM: result = "NUM"; break;
-      default: result = "---"; break;
-    }
-    return {intToStrHex(ehdr64_ptr->e_version), result};
- }
-
- std::string PrintableEhdr64::entry()
- {
-    return std::to_string(ehdr64_ptr->e_entry);
- }
-
- std::string PrintableEhdr64::phoff()
- {
-    return std::to_string(ehdr64_ptr->e_phoff);
- }
-
- std::string PrintableEhdr64::shoff()
- {
-    return std::to_string(ehdr64_ptr->e_shoff);
- }
-
- std::string PrintableEhdr64::flags()
- {
-    return std::to_string(ehdr64_ptr->e_flags);
- }
-
- std::string PrintableEhdr64::ehsize()
- {
-    return std::to_string(ehdr64_ptr->e_ehsize);
- }
-
- std::string PrintableEhdr64::phentsize()
- {
-    return std::to_string(ehdr64_ptr->e_phentsize);
- }
-
- std::string PrintableEhdr64::phnum()
- {
-    return std::to_string(ehdr64_ptr->e_phnum);
- }
-
- std::string PrintableEhdr64::shentsize()
- {
-    return std::to_string(ehdr64_ptr->e_shentsize);
- }
-
- std::string PrintableEhdr64::shnum()
- {
-    return std::to_string(ehdr64_ptr->e_shnum);
- }
-
- std::string PrintableEhdr64::shstrndx()
- {
-    return std::to_string(ehdr64_ptr->e_shstrndx);
- }
-
-std::unordered_map<int, std::string> PrintableEhdr64::e_type{
+std::unordered_map<int, std::string> machineDict{
     {EM_NONE,"No machine "},      
 {EM_M32,"AT&T WE 32100 "},     
 {EM_SPARC,"SUN SPARC "},      
