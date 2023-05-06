@@ -2,7 +2,6 @@
 #include <filesystem>
 #include <iomanip>
 #include "printableelf.hpp"
-#include "printable_phdr.hpp"
   
 PrintableElf::PrintableElf(const std::string& path, std::ostream &os) :
     file_path(path), os(os), file(std::ifstream())

@@ -3,6 +3,7 @@
 
 #include "printable_ehdr.hpp"
 #include "printable_phdr.hpp"
+#include "printable_shdr.hpp"
 #include <vector>
 #include <memory>
 #include <fstream>
