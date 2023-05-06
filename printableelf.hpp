@@ -2,7 +2,7 @@
 #define PRINTABLEELF_HPP
 
 #include "printable_ehdr.hpp"
-
+#include "printable_phdr.hpp"
 #include <vector>
 #include <memory>
 #include <fstream>

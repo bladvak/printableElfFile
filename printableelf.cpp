@@ -2,7 +2,8 @@
 #include <filesystem>
 #include <iomanip>
 #include "printableelf.hpp"
-
+#include "printable_phdr.hpp"
+  
 PrintableElf::PrintableElf(const std::string& path, std::ostream &os) :
     file_path(path), os(os), file(std::ifstream())
 {
@@ -51,6 +52,7 @@ void PrintableElf::FileHeader(){
     os<<std::setw(36)<<"Type:"<<atype.second<<"\n";
     auto amachine = std::visit(Ehdr::machine(), ehdr);
     os<<std::setw(36)<<"Machine:"<<amachine.second<<"\n";
+    os<<std::setw(36)<<"Flags:"<<std::visit(Ehdr::flags(),ehdr)<<"\n";
     // version
     os<<std::setw(36)<<"Entry point:"<<std::visit(Ehdr::entry(),ehdr)<<"\n";
     os<<std::setw(36)<<"Program header offset:"<<std::visit(Ehdr::phoff(),ehdr)<<"\n";
