@@ -17,8 +17,8 @@ struct flags{
 };
 
 struct offset{
-    long operator()(Elf32_Phdr* );
-    long operator()(Elf64_Phdr* );
+    std::string operator()(Elf32_Phdr* );
+    std::string operator()(Elf64_Phdr* );
 };
 
 struct vaddr{

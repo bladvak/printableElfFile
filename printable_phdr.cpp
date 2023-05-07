@@ -58,30 +58,30 @@ namespace Phdr{
         return f;
     }
 
-    long offset::operator()(Elf32_Phdr *phdr)
+    std::string offset::operator()(Elf32_Phdr *phdr)
     {
-        return phdr->p_offset;
+        return asAddressHex(phdr->p_offset);
     }
 
-    long offset::operator()(Elf64_Phdr *phdr)
+    std::string offset::operator()(Elf64_Phdr *phdr)
     {
-        return phdr->p_offset;
+        return asAddressHex(phdr->p_offset);
     }
     std::string vaddr::operator()(Elf32_Phdr *phdr)
     {
-        return intToStrHex(phdr->p_vaddr);
+        return asAddressHex(phdr->p_vaddr);
     }
     std::string vaddr::operator()(Elf64_Phdr *phdr)
     {
-        return intToStrHex(phdr->p_vaddr);
+        return asAddressHex(phdr->p_vaddr);
     }
     std::string paddr::operator()(Elf32_Phdr *phdr)
     {
-        return intToStrHex(phdr->p_paddr);
+        return asAddressHex(phdr->p_paddr);
     }
     std::string paddr::operator()(Elf64_Phdr *phdr)
     {
-        return intToStrHex(phdr->p_paddr);
+        return asAddressHex(phdr->p_paddr);
     }
     long filesz::operator()(Elf32_Phdr *phdr)
     {
@@ -111,6 +111,29 @@ namespace Phdr{
 
 std::unordered_map<int, std::string> Phdr::typeDict = {
      {	PT_NULL, " Program header table entry unused"},
+{ PT_LOAD, "LOAD"},
+{ PT_DYNAMIC, "DYNAMIC"},
+{ PT_INTERP, "INTERP"},
+{ PT_NOTE, "NOTE"},
+{ PT_SHLIB, "SHLIB"},
+{ PT_PHDR, "PHDR"},
+{ PT_TLS, "TLS"},
+{	PT_NUM, "NUM"},
+{ PT_LOOS, "LOOS"},
+{ PT_GNU_EH_FRAME, "GNU_EH_FRAME"},
+{ PT_GNU_STACK, "GNU_STACK"},
+{ PT_GNU_RELRO, "GNU_RELRO"},
+{ PT_GNU_PROPERTY, "GNU_PROPERTY"},
+{ PT_LOSUNW	, "LOSUNW"},
+{ PT_SUNWBSS, "SUNWBSS"},
+{ PT_SUNWSTACK, "SUNWSTACK"},
+{ PT_HISUNW, "HISUNW"},
+{ PT_HIOS, "HIOS"},
+{ PT_LOPROC, "LOPROC"},
+{ PT_HIPROC, "HIPROC"} };
+
+/*
+{	PT_NULL, " Program header table entry unused"},
 { PT_LOAD, " Loadable program segment"},
 { PT_DYNAMIC, " Dynamic linking information"},
 { PT_INTERP, " Program interpreter"},
@@ -130,4 +153,5 @@ std::unordered_map<int, std::string> Phdr::typeDict = {
 { PT_HISUNW, " HI SUN"},
 { PT_HIOS, " End of OS-specific"},
 { PT_LOPROC, " Start of processor-specific"},
-{ PT_HIPROC, " End of processor-specific"} };
+{ PT_HIPROC, " End of processor-specific"}
+*/

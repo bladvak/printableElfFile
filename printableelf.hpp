@@ -30,8 +30,8 @@ private:
     std::unique_ptr<char[]> mem;
 
     std::variant<Elf32_Ehdr*,Elf64_Ehdr*> ehdr;
-    //std::vector<PrintablePhdr* > phdrs;
-    //std::vector<PrintableShdr* > shdrs;
+    std::vector< std::variant<Elf32_Phdr*, Elf64_Phdr*>> phdrs;
+    std::vector< std::variant<Elf32_Shdr*, Elf64_Shdr*>> shdrs;
 };
 
 #endif

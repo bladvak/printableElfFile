@@ -24,6 +24,6 @@ struct printS{
 int main(){
 
 PrintableElf e("exe");
-e.FileHeader();
+e.FileHeader(); e.ProgramHeaders();
     return 0;
 }

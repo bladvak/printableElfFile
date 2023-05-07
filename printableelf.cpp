@@ -14,16 +14,38 @@ PrintableElf::PrintableElf(const std::string& path, std::ostream &os) :
     auto size = std::filesystem::file_size(path);
     mem = std::make_unique<char[]>(size); //might throw bad_alloc
     file.read(mem.get(),size);            //might throw
-    //std::cout<<file.gcount();
-    //init all of the structures
+    
     auto arch = mem[EI_CLASS];
 
-    if(arch == ELFCLASS32){
+    if(arch == ELFCLASS32){             //initialize structures for x32
             ehdr =(Elf32_Ehdr*) static_cast<void*>(mem.get());
-    } else if (arch == ELFCLASS64){
+            const auto eh = static_cast<Elf32_Ehdr*>(static_cast<void*>(mem.get()));
+
+            for(int i = 0; i < eh->e_phnum; i++){
+                phdrs.push_back((Elf32_Phdr*)(void*)(mem.get() + eh->e_phoff +
+                                i * eh->e_phentsize));
+            }
+
+            for(int i = 0; i < eh->e_shnum; i++){
+                shdrs.push_back((Elf32_Shdr*)(void*)(mem.get() + eh->e_shoff +
+                                i * eh->e_shentsize));
+            }
+
+    } else if (arch == ELFCLASS64){     //initialize structures for x64
             ehdr =(Elf64_Ehdr*) static_cast<void*>(mem.get());
+            const auto eh = static_cast<Elf64_Ehdr*>(static_cast<void*>(mem.get()));
+
+            for(int i = 0; i < eh->e_phnum; i++){
+                phdrs.push_back((Elf64_Phdr*)(void*)(mem.get() + eh->e_phoff +
+                                i * eh->e_phentsize));
+            }
+
+            for(int i = 0; i < eh->e_shnum; i++){
+                shdrs.push_back((Elf64_Shdr*)(void*)(mem.get() + eh->e_shoff +
+                                i * eh->e_shentsize));
+            }
     } else {
-        exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE); // !!! handle this case properly later !!!
     }
 
 } 
@@ -62,4 +84,20 @@ void PrintableElf::FileHeader(){
     os<<std::setw(36)<<"Section header size:"<<std::visit(Ehdr::shentsize(),ehdr)<<" (bytes)"<<"\n";
     os<<std::setw(36)<<"Number of section headers:"<<std::visit(Ehdr::shnum(),ehdr)<<"\n";
     os<<std::setw(36)<<"Index of string table:"<<std::visit(Ehdr::shstrndx(),ehdr)<<"\n";
+}
+
+void PrintableElf::ProgramHeaders()
+{
+    os<<"\n__________________Program header table___\n";
+    os<<"\n"<<std::left<<std::setw(20)<<"Type"<<std::setw(20)<<"Offset"<<std::setw(20)<<
+        "Virtual addres"<<"Physical address\n"<<std::setw(20)<<""<<std::setw(20)<<
+        "File size"<<std::setw(20)<<"Memory size"<<std::setw(10)<<"Flags"<<"Allign";
+
+    for(const auto& p : phdrs){
+        os<<"\n"<<std::left<<std::setw(20)<<std::visit(Phdr::type(),p)<<std::setw(20)<<std::visit(Phdr::offset(),p)<<std::setfill(' ')<<std::left<< std::setw(20)<<
+        std::visit(Phdr::vaddr(),p)<<std::visit(Phdr::paddr(),p)<<"\n"<<std::setw(20)<<""<<std::setw(20)<<
+        std::visit(Phdr::filesz(),p)<<std::setw(20)<<std::visit(Phdr::memsz(),p)<<std::setw(10)<<std::visit(Phdr::flags(),p)<<
+        std::visit(Phdr::align(),p);
+    }
+    os<<"\n\n";
 }
