@@ -106,15 +106,15 @@ namespace Shdr{
 
     std::string addr::operator()(Elf64_Shdr *shdr)
     {
-        return intToStrHex(shdr->sh_addr);
+        return asAddressHex(shdr->sh_addr);
     }
-    long offset::operator()(Elf32_Shdr *shdr)
+    std::string offset::operator()(Elf32_Shdr *shdr)
     {
-        return shdr->sh_offset;
+        return asAddressHex(shdr->sh_offset);
     }
-    long offset::operator()(Elf64_Shdr *shdr)
+    std::string offset::operator()(Elf64_Shdr *shdr)
     {
-        return shdr->sh_offset;
+        return intToStrHex(shdr->sh_offset);
     }
     long size::operator()(Elf32_Shdr *shdr)
     {
@@ -162,20 +162,20 @@ namespace Shdr{
         os<<"W (write), A (alloc), X (execute), M (merge),"
             "S (strings), \n I (info link), L (link order), O (non-standard OS specific processing),\n"
             "G (group), T (TLS), C (compressed), o (OS specific), p (processor specific),\n"
-            "R (retain), s (special ordering required), E (exclude)";
+            "R (retain), s (special ordering required), E (exclude)\n";
     }
 
 }
 
 std::unordered_map<int, std::string> Shdr::typeDict{
-    {SHT_NULL,"Section header table entry unused "}, 
+    {SHT_NULL,"unused Section header table entry"}, 
 {SHT_PROGBITS,"Program data "},    
 {SHT_SYMTAB,"Symbol table "},    
 {SHT_STRTAB,"String table "},    
 {SHT_RELA,"Relocation entries with addends "},  
 {SHT_HASH,"Symbol hash table "},   
 {SHT_DYNAMIC,"Dynamic linking information "},   
-{SHT_NOTE,"Notes "},     
+{SHT_NOTE,"Note "},     
 {SHT_NOBITS,"Program space with no data (bss) "},
 {SHT_REL,"Relocation entries, no addends "},  
 {SHT_SHLIB,"Reserved "},     

@@ -28,8 +28,8 @@ extern std::unordered_map<int, std::string> typeDict;
     };
 
     struct offset{
-        long operator()(Elf32_Shdr* );
-        long operator()(Elf64_Shdr* );
+        std::string operator()(Elf32_Shdr* );
+        std::string operator()(Elf64_Shdr* );
     };
 
     struct size{

@@ -20,10 +20,12 @@ struct printS{
     string operator()(A* a){return "AAA";}
     string operator()(B* b){return "BBB";}
 };
-
+//just for testing as for now
 int main(){
 
 PrintableElf e("exe");
-e.FileHeader(); e.ProgramHeaders();
+//e.FileHeader(); e.ProgramHeaders();
+e.SectionHeaders();
+
     return 0;
 }

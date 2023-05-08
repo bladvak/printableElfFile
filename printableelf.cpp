@@ -86,15 +86,45 @@ void PrintableElf::FileHeader(){
     os<<std::setw(36)<<"Index of string table:"<<std::visit(Ehdr::shstrndx(),ehdr)<<"\n";
 }
 
+void PrintableElf::SectionHeaders()
+{
+    int counter = 0;
+    os<<"\n__________________Section header table___\n";
+    os<<std::left<<std::setw(6)<<"[nr]"<<std::setw(20)<<"Name"<<std::setw(20)<<"Type"
+        <<std::setw(20)<<"Address"<<"Offset\n"<<std::setw(6)<<""<<std::setw(20)<<"Size"
+        <<std::setw(20)<<"Entry size"<<std::setw(7)<<"Flags"<<std::setw(8)<<"Link"
+        <<std::setw(5)<<"Info"<<"Allign\n";
+        /*uint shnum, shoff, shsize;
+        const uint shoff = std::stoi(std::visit(Ehdr::shoff(),ehdr));
+        const uint shnum = std::stoi(std::visit(Ehdr::shnum(),ehdr));
+        const uint shsiz = std::stoi(std::visit(Ehdr::shentsize(),ehdr));
+        const uint shstr = std::stoi(std::visit(Ehdr::shstrndx(),ehdr));*/
+
+        const auto& shstrPtr = shdrs[stoi(std::visit(Ehdr::shstrndx(),ehdr))];
+        auto arr = mem.get() + std::stoi(std::visit(Shdr::offset(), shstrPtr),0,16);
+    for(const auto& s : shdrs){
+
+        os<<std::left<<std::setw(6)<<counter<<std::setw(20)<<std::string(arr + std::visit(Shdr::name(),s))
+        <<std::setw(20)<<std::visit(Shdr::type(), s).second.substr(0,17)<<std::setw(20)<<std::visit(Shdr::addr(), s)
+        <<std::visit(Shdr::offset(), s)<<"\n"<<std::setw(6)<<""<<std::setw(20)<<std::visit(Shdr::size(), s)
+        <<std::setw(20)<<std::visit(Shdr::entsize(), s)<<std::setw(7)<<std::visit(Shdr::flags(), s)
+        <<std::setw(8)<<std::visit(Shdr::link(), s)<<std::setw(5)<<std::visit(Shdr::info(), s)<<std::setw(20)
+        <<std::visit(Shdr::addralign(), s)<<"\n";
+
+        counter++;
+    }
+    Shdr::infoFlags(os);
+}
+
 void PrintableElf::ProgramHeaders()
 {
     os<<"\n__________________Program header table___\n";
     os<<"\n"<<std::left<<std::setw(20)<<"Type"<<std::setw(20)<<"Offset"<<std::setw(20)<<
         "Virtual addres"<<"Physical address\n"<<std::setw(20)<<""<<std::setw(20)<<
-        "File size"<<std::setw(20)<<"Memory size"<<std::setw(10)<<"Flags"<<"Allign";
+        "File size"<<std::setw(20)<<"Memory size"<<std::setw(10)<<"Flags"<<"Allign\n";
 
     for(const auto& p : phdrs){
-        os<<"\n"<<std::left<<std::setw(20)<<std::visit(Phdr::type(),p)<<std::setw(20)<<std::visit(Phdr::offset(),p)<<std::setfill(' ')<<std::left<< std::setw(20)<<
+        os<<std::left<<std::setw(20)<<std::visit(Phdr::type(),p)<<std::setw(20)<<std::visit(Phdr::offset(),p)<<std::setfill(' ')<<std::left<< std::setw(20)<<
         std::visit(Phdr::vaddr(),p)<<std::visit(Phdr::paddr(),p)<<"\n"<<std::setw(20)<<""<<std::setw(20)<<
         std::visit(Phdr::filesz(),p)<<std::setw(20)<<std::visit(Phdr::memsz(),p)<<std::setw(10)<<std::visit(Phdr::flags(),p)<<
         std::visit(Phdr::align(),p);
