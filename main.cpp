@@ -25,7 +25,8 @@ int main(){
 
 PrintableElf e("exe");
 //e.FileHeader(); e.ProgramHeaders();
-e.SectionHeaders();
+//e.SectionHeaders(); 
+e.SymbolsTable();
 
     return 0;
 }

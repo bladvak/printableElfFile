@@ -1,7 +1,7 @@
 
-a.out : main.o printableelf.o printable_ehdr.o printable_phdr.o printable_shdr.o utils.o
+a.out : main.o printableelf.o printable_ehdr.o printable_phdr.o printable_shdr.o utils.o printable_sym.o
 	   g++ main.o printableelf.o printable_ehdr.o printable_phdr.o \
-	   printable_shdr.o utils.o
+	   printable_shdr.o utils.o printable_sym.o
 
 main.o : main.cpp
 	g++ -c main.cpp -g
@@ -9,16 +9,20 @@ main.o : main.cpp
 printableelf.o : printableelf.cpp printableelf.hpp
 	g++ -c printableelf.cpp -g
 
-printable_ehdr.o : printable_ehdr.cpp printable_ehdr.hpp utils.hpp
+printable_ehdr.o : printable_ehdr.cpp printable_ehdr.hpp 
 	g++ -c printable_ehdr.cpp -g
 
-printable_phdr.o : printable_phdr.cpp printable_phdr.hpp utils.hpp
+printable_phdr.o : printable_phdr.cpp printable_phdr.hpp 
 	g++ -c printable_phdr.cpp -g
 
-printable_shdr.o : printable_shdr.cpp printable_shdr.hpp utils.hpp
+printable_shdr.o : printable_shdr.cpp printable_shdr.hpp 
 	g++ -c printable_shdr.cpp -g
 
-utils.o : utils.cpp utils.o
+utils.o : utils.cpp utils.hpp
 	g++ -c utils.cpp -g
+
+printable_sym: printable_sym.cpp printable_sym.hpp
+	g++ -c printable_sym.cpp -g
+
 clean:
 	rm a.out *.o

@@ -1,6 +1,7 @@
 #include <exception>
 #include <filesystem>
 #include <iomanip>
+#include <algorithm>
 #include "printableelf.hpp"
   
 PrintableElf::PrintableElf(const std::string& path, std::ostream &os) :
@@ -31,6 +32,18 @@ PrintableElf::PrintableElf(const std::string& path, std::ostream &os) :
                                 i * eh->e_shentsize));
             }
 
+            //symbol table
+            auto symtabIt = std::find_if(shdrs.cbegin(),shdrs.cend(), [](auto p){
+                return std::visit(Shdr::type(), p).second == Shdr::typeDict[SHT_SYMTAB]; } );
+            if(symtabIt != shdrs.cend()){
+                auto symCount = std::visit(Shdr::size(), *symtabIt) / std::visit(Shdr::entsize(), *symtabIt);
+                auto offset = std::stoi(std::visit(Shdr::offset(), *symtabIt), 0, 16);
+                auto& strtab = shdrs[ std::visit(Shdr::link(), *symtabIt)];
+                strtab_ptr = mem.get() + std::stoi(std::visit(Shdr::offset(),strtab), 0, 16);
+                for(int i = 0; i < symCount; i++)
+                    symbols.push_back((Elf32_Sym*)(void*) (mem.get() + offset + (i * std::visit(Shdr::entsize(), *symtabIt))));
+            }
+
     } else if (arch == ELFCLASS64){     //initialize structures for x64
             ehdr =(Elf64_Ehdr*) static_cast<void*>(mem.get());
             const auto eh = static_cast<Elf64_Ehdr*>(static_cast<void*>(mem.get()));
@@ -43,6 +56,17 @@ PrintableElf::PrintableElf(const std::string& path, std::ostream &os) :
             for(int i = 0; i < eh->e_shnum; i++){
                 shdrs.push_back((Elf64_Shdr*)(void*)(mem.get() + eh->e_shoff +
                                 i * eh->e_shentsize));
+            }
+            //symbol table
+            auto symtabIt = std::find_if(shdrs.cbegin(),shdrs.cend(), [](auto p){
+                return std::visit(Shdr::type(), p).second == Shdr::typeDict[SHT_SYMTAB]; } );
+            if(symtabIt != shdrs.cend()){
+                auto symCount = std::visit(Shdr::size(), *symtabIt) / std::visit(Shdr::entsize(), *symtabIt);
+                auto offset = std::stoi(std::visit(Shdr::offset(), *symtabIt), 0, 16);
+                auto& strtab = shdrs[ std::visit(Shdr::link(), *symtabIt)];
+                strtab_ptr = mem.get() + std::stoi(std::visit(Shdr::offset(),strtab), 0, 16);
+                for(int i = 0; i < symCount; i++)
+                    symbols.push_back((Elf64_Sym*)(void*) (mem.get() + offset + (i * std::visit(Shdr::entsize(), *symtabIt))));
             }
     } else {
         exit(EXIT_FAILURE); // !!! handle this case properly later !!!
@@ -130,4 +154,23 @@ void PrintableElf::ProgramHeaders()
         std::visit(Phdr::align(),p);
     }
     os<<"\n\n";
+}
+
+void PrintableElf::SymbolsTable()
+{
+    
+    std::cout<<"\n.symtab contains "<<symbols.size()<<"symbols:\n";
+    std::cout<<std::left<<std::setw(5)<<"Num:"<<std::setw(16)<<"Value"<<std::setw(6)<<
+                "Size"<<std::setw(12)<<"Type"<<std::setw(10)<<"Bind"<<std::setw(14)<<"Vis"<<
+                std::setw(6)<<"Ndx"<<"Name\n";
+    int count = 0;
+   for(auto& s : symbols){
+        
+        std::cout<<std::left<<std::setw(5)<<count<<std::setw(16)<<std::visit(Sym::value(),s)<<std::setw(6)<<
+                std::visit(Sym::size(),s)<<std::setw(12)<<std::visit(Sym::infoType(),s)<<std::setw(10)<<std::visit(Sym::infoBind(),s)<<std::setw(14)<<
+                std::visit(Sym::other(),s)<<std::setw(6)<<std::visit(Sym::shndx(),s)<<std::string(std::visit(Sym::name(),s) + strtab_ptr).substr(0,16)<<"\n";
+                count++;
+        
+   }
+
 }
