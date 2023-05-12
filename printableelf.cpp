@@ -160,13 +160,13 @@ void PrintableElf::SymbolsTable()
 {
     
     std::cout<<"\n.symtab contains "<<symbols.size()<<"symbols:\n";
-    std::cout<<std::left<<std::setw(5)<<"Num:"<<std::setw(16)<<"Value"<<std::setw(6)<<
+    std::cout<<std::left<<std::setw(5)<<"Num:"<<std::setw(20)<<"Value"<<std::setw(6)<<
                 "Size"<<std::setw(12)<<"Type"<<std::setw(10)<<"Bind"<<std::setw(14)<<"Vis"<<
                 std::setw(6)<<"Ndx"<<"Name\n";
     int count = 0;
    for(auto& s : symbols){
         
-        std::cout<<std::left<<std::setw(5)<<count<<std::setw(16)<<std::visit(Sym::value(),s)<<std::setw(6)<<
+        std::cout<<std::left<<std::setw(5)<<count<<std::setw(20)<<std::visit(Sym::value(),s)<<std::setw(6)<<
                 std::visit(Sym::size(),s)<<std::setw(12)<<std::visit(Sym::infoType(),s)<<std::setw(10)<<std::visit(Sym::infoBind(),s)<<std::setw(14)<<
                 std::visit(Sym::other(),s)<<std::setw(6)<<std::visit(Sym::shndx(),s)<<std::string(std::visit(Sym::name(),s) + strtab_ptr).substr(0,16)<<"\n";
                 count++;
