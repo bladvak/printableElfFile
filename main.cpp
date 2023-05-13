@@ -1,32 +1,71 @@
 #include <string>
 #include <iostream>
-#include <sstream>
-#include <filesystem>
 #include <fstream>
-#include <utility>
-#include <variant>
-#include <vector>
+#include <boost/program_options.hpp>
 using namespace std;
 #include "printableelf.hpp"
 
-struct A{
-    std::string s;
-};
-struct B{
-    std::string s;
-};
+namespace po = boost::program_options;
 
-struct printS{
-    string operator()(A* a){return "AAA";}
-    string operator()(B* b){return "BBB";}
-};
-//just for testing as for now
-int main(){
+int main(int argc, char** argv){
 
-PrintableElf e("exe");
-//e.FileHeader(); e.ProgramHeaders();
-//e.SectionHeaders(); 
-e.SymbolsTable();
+po::options_description desc("Usage: viewelf <options> elf-file");
+desc.add_options()
+    ("help, h", "Display help")
+    ("all, a", "all options combined")
+    ("file-header,f", "display the file header")
+    ("section-headers, s", "display the section header table")
+    ("program-headers, p", "display the program header table")
+    ("symbols, S", "display symbol table")
+    ("info, i", "basic information")
+    ("filename", po::value<std::vector<std::string>>(),"file to be processed");
+
+po::positional_options_description pos;
+pos.add("filename", -1);
+
+po::variables_map vm;
+po::store(po::command_line_parser(argc, argv).options(desc).positional(pos).allow_unregistered().run(), vm);
+po::notify(vm);
+
+
+if(vm.empty() || vm.count("help")){
+    std::cout<<desc;
+    return -1;
+} else {
+    if(vm.count("filename")){
+        auto filename = vm["filename"].as<std::vector<std::string>>()[0];
+        
+        try{
+            PrintableElf pr(filename);
+            if(vm.count("all")){
+                 pr.FileHeader();
+                 pr.SectionHeaders();
+                 pr.ProgramHeaders();
+                 pr.SymbolsTable();
+             } else {
+            if(vm.count("info"))
+                pr.info();
+            if(vm.count("file-header"))
+                pr.FileHeader();
+            if(vm.count("section-headers"))
+                pr.SectionHeaders();
+            if(vm.count("program-headers"))
+                pr.ProgramHeaders();
+            if(vm.count("symbols"))
+                pr.SymbolsTable();
+        }
+        } catch(std::ios_base::failure& e){
+            std::cout<<e.what(); return -1;
+        }
+            
+    } else {
+        std::cout<<desc;
+        return -1;
+    }
+
+}
+
+
 
     return 0;
 }

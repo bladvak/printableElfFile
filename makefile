@@ -1,7 +1,8 @@
 
 a.out : main.o printableelf.o printable_ehdr.o printable_phdr.o printable_shdr.o utils.o printable_sym.o
 	   g++ main.o printableelf.o printable_ehdr.o printable_phdr.o \
-	   printable_shdr.o utils.o printable_sym.o
+	   printable_shdr.o utils.o printable_sym.o -L /usr/lib/x86_64-linux-gnu -l boost_program_options
+	   
 
 main.o : main.cpp
 	g++ -c main.cpp -g

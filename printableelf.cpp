@@ -151,7 +151,7 @@ void PrintableElf::ProgramHeaders()
         os<<std::left<<std::setw(20)<<std::visit(Phdr::type(),p)<<std::setw(20)<<std::visit(Phdr::offset(),p)<<std::setfill(' ')<<std::left<< std::setw(20)<<
         std::visit(Phdr::vaddr(),p)<<std::visit(Phdr::paddr(),p)<<"\n"<<std::setw(20)<<""<<std::setw(20)<<
         std::visit(Phdr::filesz(),p)<<std::setw(20)<<std::visit(Phdr::memsz(),p)<<std::setw(10)<<std::visit(Phdr::flags(),p)<<
-        std::visit(Phdr::align(),p);
+        std::visit(Phdr::align(),p)<<"\n";
     }
     os<<"\n\n";
 }
