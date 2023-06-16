@@ -5,6 +5,7 @@
 #include "printable_phdr.hpp"
 #include "printable_shdr.hpp"
 #include "printable_sym.hpp"
+#include "rel.hpp"
 #include <vector>
 #include <memory>
 #include <fstream>
@@ -23,6 +24,9 @@ public:
     void SectionHeaders();
     void ProgramHeaders();
     void SymbolsTable();
+    //void Notes();
+    void Relocs();
+
 
 private:
     
@@ -36,6 +40,8 @@ private:
     std::vector< std::variant<Elf32_Phdr*, Elf64_Phdr*>> phdrs;
     std::vector< std::variant<Elf32_Shdr*, Elf64_Shdr*>> shdrs;
     std::vector< std::variant<Elf32_Sym*, Elf64_Sym*>> symbols;
+    //std::variant<Elf32_Nhdr*, Elf64_Nhdr*> nhdr;
+
 };
 
 #endif

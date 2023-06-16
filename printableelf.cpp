@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <algorithm>
 #include "printableelf.hpp"
+#include "note.hpp"
   
 PrintableElf::PrintableElf(const std::string& path, std::ostream &os) :
     file_path(path), os(os), file(std::ifstream())
@@ -44,6 +45,8 @@ PrintableElf::PrintableElf(const std::string& path, std::ostream &os) :
                     symbols.push_back((Elf32_Sym*)(void*) (mem.get() + offset + (i * std::visit(Shdr::entsize(), *symtabIt))));
             }
 
+            
+
     } else if (arch == ELFCLASS64){     //initialize structures for x64
             ehdr =(Elf64_Ehdr*) static_cast<void*>(mem.get());
             const auto eh = static_cast<Elf64_Ehdr*>(static_cast<void*>(mem.get()));
@@ -68,8 +71,9 @@ PrintableElf::PrintableElf(const std::string& path, std::ostream &os) :
                 for(int i = 0; i < symCount; i++)
                     symbols.push_back((Elf64_Sym*)(void*) (mem.get() + offset + (i * std::visit(Shdr::entsize(), *symtabIt))));
             }
+            
     } else {
-        exit(EXIT_FAILURE); // !!! handle this case properly later !!!
+        exit(EXIT_FAILURE); // 
     }
 
 } 
@@ -174,3 +178,41 @@ void PrintableElf::SymbolsTable()
    }
 
 }
+
+void PrintableElf::Relocs()
+{
+    for(auto& shdr : shdrs){
+        if(std::visit(Shdr::type(), shdr).second == std::string("Relocation entries with addends")){ //RELA
+
+            auto numOfRelocs = std::visit(Shdr::size(),shdr)/std::visit(Shdr::entsize(),shdr);
+            //std::variant<Elf32_Rela*, Elf64_Rela*> rela;
+            auto ptr = (void*) (mem.get() + std::stoi(std::visit(Shdr::offset(),shdr),0, 16));
+            
+            std::variant<Elf32_Rela*, Elf64_Rela*> rela ; 
+
+            const auto& shstrPtr = shdrs[stoi(std::visit(Ehdr::shstrndx(),ehdr))];
+            auto arr = mem.get() + std::stoi(std::visit(Shdr::offset(), shstrPtr),0,16);
+            os<<"\n"<<"___________ Relocation section " <<std::string(arr + std::visit(Shdr::name(),shdr));
+            os<<"\n\n"<<std::left<<std::setw(20)<<"Offset"<<std::setw(20)<<"Info"<<std::setw(30)
+                <<"Type"<<"Addend\n";
+
+            for(int i = 0; i < numOfRelocs; i++){
+                if(shdr.index())
+                    rela = (Elf64_Rela*) ptr + i;
+                 else
+                    rela = (Elf32_Rela*) ptr + i;
+
+               
+                os<<std::left<<std::setw(20)<<std::visit(Rela::offset(),rela)<<std::setw(20)<<std::visit(Rela::info(),rela) <<std::setw(30)
+                <<std::visit(Rela::type(), rela).substr(0,29)<<std::visit(Rela::addend(), rela)<<"\n";
+               
+                
+                
+            }
+        }
+        else if(std::visit(Shdr::type(), shdr).second == std::string("Relocation entries, no addends")){ //REL
+
+        }
+    }
+}
+ 

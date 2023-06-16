@@ -1,7 +1,7 @@
 
-a.out : main.o printableelf.o printable_ehdr.o printable_phdr.o printable_shdr.o utils.o printable_sym.o
-	   g++ main.o printableelf.o printable_ehdr.o printable_phdr.o \
-	   printable_shdr.o utils.o printable_sym.o -L /usr/lib/x86_64-linux-gnu -l boost_program_options
+a.out : main.o printableelf.o printable_ehdr.o printable_phdr.o printable_shdr.o utils.o printable_sym.o rel.o
+	   g++ main.o printableelf.o printable_ehdr.o printable_phdr.o rel.o \
+	   printable_shdr.o utils.o printable_sym.o  -L /usr/lib/x86_64-linux-gnu -l boost_program_options
 	   
 
 main.o : main.cpp
@@ -24,6 +24,10 @@ utils.o : utils.cpp utils.hpp
 
 printable_sym: printable_sym.cpp printable_sym.hpp
 	g++ -c printable_sym.cpp -g
+
+rel.o : rel.cpp rel.hpp 
+	g++ -c rel.cpp -g
+
 
 clean:
 	rm a.out *.o

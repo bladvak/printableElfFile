@@ -18,6 +18,8 @@ desc.add_options()
     ("program-headers, p", "display the program header table")
     ("symbols, S", "display symbol table")
     ("info, i", "basic information")
+    ("relocations, r", "relocations")
+    //("note, n", "note sections info")
     ("filename", po::value<std::vector<std::string>>(),"file to be processed");
 
 po::positional_options_description pos;
@@ -53,6 +55,8 @@ if(vm.empty() || vm.count("help")){
                 pr.ProgramHeaders();
             if(vm.count("symbols"))
                 pr.SymbolsTable();
+            if(vm.count("relocations"))
+                pr.Relocs();
         }
         } catch(std::ios_base::failure& e){
             std::cout<<e.what(); return -1;
